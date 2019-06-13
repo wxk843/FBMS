@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head th:include="console/header">
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+  <header class="main-header" th:include="common/header">
+  </header>
+  <!-- Left side column. contains the logo and sidebar -->
+  <aside class="main-sidebar" th:include="common/menu">  
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Data Tables
+        <small>advanced tables</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Tables</a></li>
+        <li class="active">Data tables</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="box">
+            <!-- /.box-header -->
+            <div class="box-body">
+              <table id="dataGrid" class="table table-bordered table-hover">
+                <!--<thead>-->
+                <!--<tr>-->
+                  <!--<th>ID</th>-->
+                  <!--<th>标题</th>-->
+                  <!--<th>图标</th>-->
+                  <!--<th>规则URL</th>-->
+                  <!--<th>权重</th>-->
+                  <!--<th>操作</th>-->
+                <!--</tr>-->
+                <!--</thead>-->
+                <!--<tbody>-->
+                <!--<tr th:each="prod : ${datlist}">-->
+                    <!--<td th:text="${prod.id}"></td>-->
+                    <!--<td th:text="${prod.title}"></td>-->
+                    <!--<td th:text="${prod.icon}"></td>-->
+                    <!--<td th:text="${prod.name}"></td>-->
+                    <!--<td th:text="${prod.weigh}"></td>-->
+                    <!--<td><a th:href="@{/rule/edit(id=${prod.id})}">编辑</a> </td>-->
+                <!--</tr>-->
+                <!--</tbody>-->
+              </table>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <div th:include="console/footer"></div>
+
+</div>
+<!-- ./wrapper -->
+
+
+
+<script>
+    $table = $("#dataGrid");
+    $(function () {
+        initDataGrid();
+    });
+    function initDataGrid(){
+        $table.bootstrapTable({
+            height : tableModel.getHeight(),
+            idField : "id",
+            columns : [[
+                {title: "ID", field: "id" },
+                {title: "标题", field: "title" },
+                {title: "图标", field: "icon", formatter: iconFormatter },
+                {title: "规则URL", field: "name" },
+                {title: "权重", field: "weigh" },
+                // {title: "状态", field: "state",formatter : tableModel.getState},
+                // {title: "创建时间", field: "createdAt", sortable: true},
+                // {title: "更新日期", field: "updatedAt", sortable: true},
+                {title: "操作", field: "operate", align: 'center', events: operateEvents, formatter: operateFormatter}
+            ]],
+            url : '../rule/list?rnd=' + Math.random(),
+            //【查询设置】
+            /* queryParamsType的默认值为 'limit' ,在默认情况下 传给服务端的参数为：offset,limit,sort
+                              设置为 ''  在这种情况下传给服务器的参数为：pageSize,pageNumber */
+            queryParamsType:'',
+            queryParams: function(params){
+                return params;
+            },
+            responseHandler : function (res) {
+                return {
+                    rows : res.result.pageInfo.content,
+                    total : res.result.pageInfo.totalElements
+                }
+            },
+            search : true,
+            searchOnEnterKey : true,
+            sortName : 'id',
+            sortOrder : 'asc',
+            pagination : true,//是否开启分页（*）
+            sidePagination : 'server',//分页方式：client客户端分页，server服务端分页（*）
+            pageNumber:1,//初始化加载第一页，默认第一页
+            pageSize: 20,//每页的记录行数（*）
+            pageList : [20, 40, 50, 100],//可供选择的每页的行数（*）
+            showRefresh : true,//刷新按钮
+            showToggle : true
+        });
+    }
+
+    function operateFormatter(value, row, index) {
+        return [
+            '<a href="javascript:;" class="btn btn-xs green"  title="查看">',
+            '<span class="glyphicon glyphicon-search"></span>查看',
+            '</a>  ',
+            '<a class="edit" href="javascript:;" >',
+            '<i class="glyphicon glyphicon-edit"></i>修改',
+            '</a>  ',
+            '<a class="remove" href="javascript:void(0);">',
+            '<i class="glyphicon glyphicon-remove"></i>删除',
+            '</a>'
+        ].join('');
+    }
+    function iconFormatter(value, row, index) {
+        return '<i class="' + value + '"></i>';
+    }
+
+    window.operateEvents = {
+        'click .edit': function (e, value, row, index) {
+
+            $("#modalDialog").draggable();//为模态对话框添加拖拽
+            $("#myModalLabel").text("添加客户");
+            $("#myModal").modal({
+                remote:"../rule/edit?id="+ row.id,//可以填写一个url，会调用jquery load方法加载数据
+                backdrop:"static",//指定一个静态背景，当用户点击背景处，modal界面不会消失
+                keyboard:true,//当按下esc键时，modal框消失
+            });
+
+        },
+        'click .remove': function (e, value, row, index) {
+            var mymessage = confirm("确认删除嘛？");
+            if (mymessage == true) {
+                $.ajax({
+                    url :  '/admin/' + row.id,
+                    type : 'delete',
+                    success : function(data) {
+                        //$(dom).parent().parent().hide();
+                    },
+                    error : function(data){
+                        alert("服务器繁忙")
+                    }
+                });
+            }
+        },
+        'click .remove': function (e, value, row, index) {
+            layer.msg('暂不支持删除')
+        }
+    };
+
+</script>
+</body>
+</html>

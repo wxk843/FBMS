@@ -1,0 +1,61 @@
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3 class="box-title">修改管理员</h3>
+    </div>
+    <!--<iframe scrolling="auto" allowtransparency="true" id="layui-layer-iframe1" name="layui-layer-iframe1" onload="this.className='';" class="" src="http://localhost:8089/admin/edit?id=5" style="height: 246px;" frameborder="0"></iframe>-->
+    <!-- /.box-header -->
+    <!-- form start -->
+<form id="edit-form" class="form-horizontal form-ajax" role="form" data-toggle="validator" method="POST" action="">
+    <div class="form-group">
+        <label for="role_id" class="control-label col-xs-12 col-sm-2">角色组:</label>
+        <div class="col-xs-12 col-sm-8">
+            <label th:each="prod : ${groups}">
+                <input type="checkbox" name="active" th:checked="false" th:value="${prod.id}"/><span th:text="${prod.name}"></span>
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="username" class="control-label col-xs-12 col-sm-2">用户名:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="username" name="row[username]" th:value="${userInfo.username}" data-rule="required;username" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="email" class="control-label col-xs-12 col-sm-2">Email:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="email" class="form-control" id="email" name="row[email]" th:value="${userInfo.email}" data-rule="required;email" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="nickname" class="control-label col-xs-12 col-sm-2">昵称:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="nickname" name="row[nickname]" th:value="${userInfo.nickname}" data-rule="required" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="password" class="control-label col-xs-12 col-sm-2">密码:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="password" class="form-control" id="password" name="row[password]" value="" data-rule="password" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="content" class="control-label col-xs-12 col-sm-2">状态:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="radio-inline">
+                <label><input name="status" type="radio" value="invalid"  th:field="${userInfo.status}"/> 禁用</label>
+            </div>
+            <div class="radio-inline">
+                <label><input name="status" type="radio" value="normal"  th:field="${userInfo.status}"/> 启用</label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group hidden layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>
+</div>
